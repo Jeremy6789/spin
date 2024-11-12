@@ -1,15 +1,38 @@
 let participants = [];
 
-function importData() {
-    const dataInput = document.getElementById("dataInput").value;
-    participants = dataInput.split("\n").map(name => name.trim()).filter(name => name);
+function addParticipant(name) {
+    participants.push(name);
     updateParticipantCount();
     renderWheel();
 }
 
+function importCSV() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const lines = event.target.result.split("\n");
+            lines.forEach(line => {
+                const name = line.trim();
+                if (name) addParticipant(name);
+            });
+        };
+        reader.readAsText(file);
+    }
+}
+
+function addInputData() {
+    const dataInput = document.getElementById("dataInput").value.split("\n");
+    dataInput.forEach(name => {
+        name = name.trim();
+        if (name) addParticipant(name);
+    });
+    document.getElementById("dataInput").value = ""; // 清空輸入框
+}
+
 function clearData() {
     participants = [];
-    document.getElementById("dataInput").value = "";
     updateParticipantCount();
     renderWheel();
 }
@@ -22,6 +45,7 @@ function renderWheel() {
     const wheel = document.getElementById("wheel");
     wheel.innerHTML = "";
     if (participants.length === 0) return;
+    
     const segmentAngle = 360 / participants.length;
     participants.forEach((name, index) => {
         const segment = document.createElement("div");
@@ -34,13 +58,16 @@ function renderWheel() {
 }
 
 function spin() {
-    if (participants.length === 0) return alert("請先匯入資料或輸入參加名單！");
+    if (participants.length === 0) return alert("請先輸入或匯入參加名單！");
+    
     const winnerIndex = Math.floor(Math.random() * participants.length);
     const rotation = 360 * 5 + (winnerIndex * (360 / participants.length));
     document.getElementById("wheel").style.transition = "transform 5s ease-out";
     document.getElementById("wheel").style.transform = `rotate(${rotation}deg)`;
+    
     setTimeout(() => {
-        document.getElementById("winnerName").textContent = participants[winnerIndex];
-        alert(`恭喜 ${participants[winnerIndex]} 中獎！`);
+        const winnerName = participants[winnerIndex];
+        document.getElementById("winnerName").textContent = winnerName;
+        alert(`恭喜 ${winnerName} 中獎！`);
     }, 5000);
 }
