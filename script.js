@@ -1,73 +1,90 @@
-let participants = [];
+const wheelCanvas = document.getElementById('wheel');
+const ctx = wheelCanvas.getContext('2d');
+const dataInput = document.getElementById('dataInput');
+const startButton = document.getElementById('startButton');
+const resetButton = document.getElementById('resetButton');
+const winnerMessage = document.getElementById('winnerMessage');
+const winnerName = document.getElementById('winnerName');
 
-function addParticipant(name) {
-    participants.push(name);
-    updateParticipantCount();
-    renderWheel();
+let names = [];
+let isSpinning = false;
+let rotation = 0;
+let currentName = '';
+
+dataInput.addEventListener('input', () => {
+    names = dataInput.value.split('\n').filter(name => name.trim() !== '');
+    drawWheel();
+});
+
+startButton.addEventListener('click', spinWheel);
+resetButton.addEventListener('click', resetWheel);
+
+function drawWheel() {
+    const numNames = names.length;
+    const arcSize = (2 * Math.PI) / numNames;
+    ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+
+    names.forEach((name, i) => {
+        const angle = i * arcSize;
+        ctx.beginPath();
+        ctx.fillStyle = i % 2 === 0 ? '#f7b2b7' : '#c2eabd';
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 200, angle, angle + arcSize);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(angle + arcSize / 2);
+        ctx.fillStyle = '#333';
+        ctx.font = '18px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(name, 120, 10);
+        ctx.restore();
+    });
 }
 
-function importCSV() {
-    const fileInput = document.getElementById("fileInput");
-    const file = fileInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const lines = event.target.result.split("\n");
-            lines.forEach(line => {
-                const name = line.trim();
-                if (name) addParticipant(name);
-            });
-        };
-        reader.readAsText(file);
+function spinWheel() {
+    if (isSpinning || names.length === 0) return;
+
+    isSpinning = true;
+    winnerMessage.classList.add('hidden');
+    const spinTime = 3000;
+    const spinRotation = Math.floor(Math.random() * 360) + 360 * 5;
+    const winnerIndex = Math.floor((rotation + spinRotation) / (360 / names.length)) % names.length;
+    currentName = names[winnerIndex];
+
+    let startTime;
+    function animateSpin(time) {
+        if (!startTime) startTime = time;
+        const elapsed = time - startTime;
+
+        rotation = (spinRotation * elapsed) / spinTime;
+        ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate((rotation * Math.PI) / 180);
+        ctx.translate(-200, -200);
+        drawWheel();
+        ctx.restore();
+
+        if (elapsed < spinTime) {
+            requestAnimationFrame(animateSpin);
+        } else {
+            isSpinning = false;
+            rotation %= 360;
+            winnerName.textContent = currentName;
+            winnerMessage.classList.remove('hidden');
+        }
     }
+    requestAnimationFrame(animateSpin);
 }
 
-function addInputData() {
-    const dataInput = document.getElementById("dataInput").value.split("\n");
-    dataInput.forEach(name => {
-        name = name.trim();
-        if (name) addParticipant(name);
-    });
-    document.getElementById("dataInput").value = ""; // 清空輸入框
+function resetWheel() {
+    dataInput.value = '';
+    names = [];
+    rotation = 0;
+    drawWheel();
+    winnerMessage.classList.add('hidden');
 }
 
-function clearData() {
-    participants = [];
-    updateParticipantCount();
-    renderWheel();
-}
-
-function updateParticipantCount() {
-    document.getElementById("participantCount").textContent = participants.length;
-}
-
-function renderWheel() {
-    const wheel = document.getElementById("wheel");
-    wheel.innerHTML = "";
-    if (participants.length === 0) return;
-    
-    const segmentAngle = 360 / participants.length;
-    participants.forEach((name, index) => {
-        const segment = document.createElement("div");
-        segment.className = "wheel-segment";
-        segment.style.transform = `rotate(${index * segmentAngle}deg) skewY(-${90 - segmentAngle}deg)`;
-        segment.style.backgroundColor = `hsl(${(index * 360) / participants.length}, 70%, 50%)`;
-        segment.innerText = name;
-        wheel.appendChild(segment);
-    });
-}
-
-function spin() {
-    if (participants.length === 0) return alert("請先輸入或匯入參加名單！");
-    
-    const winnerIndex = Math.floor(Math.random() * participants.length);
-    const rotation = 360 * 5 + (winnerIndex * (360 / participants.length));
-    document.getElementById("wheel").style.transition = "transform 5s ease-out";
-    document.getElementById("wheel").style.transform = `rotate(${rotation}deg)`;
-    
-    setTimeout(() => {
-        const winnerName = participants[winnerIndex];
-        document.getElementById("winnerName").textContent = winnerName;
-        alert(`恭喜 ${winnerName} 中獎！`);
-    }, 5000);
-}
+drawWheel();
