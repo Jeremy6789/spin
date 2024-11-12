@@ -1,4 +1,3 @@
-/* 全域設置 */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -12,53 +11,22 @@ html, body {
     font-family: Arial, sans-serif;
     background: #f0f4f8;
 }
-
-/* 容器 */
 .container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* 標題區域 */
-.header {
-    display: flex;
-    justify-content: space-around;
-    background-color: #4a708b;
-    padding: 10px;
-    color: white;
-}
-.header button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-/* 主要內容區域 */
-.main {
-    display: flex;
-    flex: 1;
-    justify-content: space-around;
-    align-items: center;
-    padding: 20px;
-}
-
-/* 轉盤區域 */
-.wheel-section {
-    position: relative;
     text-align: center;
+    max-width: 600px;
+    width: 100%;
 }
-.wheel {
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background-color: #cccccc;
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.wheel-container {
     position: relative;
-    overflow: hidden;
-    margin: 0 auto;
+    display: inline-block;
+}
+canvas {
+    border-radius: 50%;
+    background-color: #f0f4f8;
 }
 .pointer {
     position: absolute;
@@ -67,45 +35,41 @@ html, body {
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-bottom: 40px solid red;
-    z-index: 10;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid red;
 }
-.winner-message {
-    font-size: 24px;
+.controls {
+    margin-top: 20px;
+}
+textarea {
+    width: 100%;
+    height: 100px;
+    resize: none;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+button {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+}
+#startButton {
+    background-color: #48c774;
+    color: white;
+}
+#resetButton {
+    background-color: #ff6b6b;
+    color: white;
+}
+#winnerMessage {
+    font-size: 20px;
     color: #333;
     font-weight: bold;
     margin-top: 20px;
 }
-
-/* 名單輸入區域 */
-.list-section {
-    text-align: left;
-    max-width: 300px;
-}
-input[type="file"], .clear-button, .start-button, #dataInput {
-    display: block;
-    width: 100%;
-    font-size: 16px;
-    padding: 8px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.clear-button {
-    background-color: #ff6b6b;
-    color: white;
-}
-.start-button {
-    background-color: #48c774;
-    color: white;
-}
-#dataInput {
-    height: 100px;
-    resize: none;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+.hidden {
+    display: none;
 }
