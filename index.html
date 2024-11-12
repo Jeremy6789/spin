@@ -16,12 +16,13 @@
         <div class="main">
             <div class="wheel-section">
                 <div class="wheel" id="wheel"></div>
+                <div class="pointer"></div>
                 <div class="winner-message" id="winnerMessage">恭喜 <span id="winnerName">XXX</span> !!</div>
             </div>
             <div class="list-section">
                 <label for="dataInput">抽獎名單:</label>
-                <button class="import-button" onclick="importData()">匯入資料</button>
-                <textarea id="dataInput" placeholder="輸入抽獎名單..."></textarea>
+                <input type="file" id="fileInput" accept=".csv" onchange="importCSV()">
+                <textarea id="dataInput" placeholder="輸入抽獎名單，每行一名..."></textarea>
                 <div>目前人數: <span id="participantCount">0</span></div>
                 <button class="clear-button" onclick="clearData()">清除資料</button>
                 <button class="start-button" onclick="spin()">開始抽獎</button>
